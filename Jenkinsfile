@@ -16,23 +16,23 @@ pipeline {
         stage('1-Build') {
             steps {
                 echo '---Build start---'
-                sh 'echo "Build by Jenkins Build number: ${BUILD_ID}" >> index.html'
-                sh 'echo "Host_port: ${HOST_PORT}" >> index.html'
-                sh "DOCKER_HOST=${DOCKER_HOST}"
-                sh "docker build -t ${IMAGE_NAME} ."   
+                sh "echo "Build by Jenkins Build number: ${BUILD_ID}" >> index.html"
+                sh "echo "Host_port: ${HOST_PORT}" >> index.html"
+                sh "DOCKER_HOST=${DOCKER_HOST} docker ps -a"
+                sh "DOCKER_HOST=${DOCKER_HOST} docker build -t ${IMAGE_NAME} ."   
             }
         }
         stage('2-Test') {
             steps {
                 echo '---TEST---'
-                sh "docker images | grep ${IMAGE_NAME}"
+                sh "DOCKER_HOST=${DOCKER_HOST} docker images | grep ${IMAGE_NAME}"
             }
         }
         stage('3-Deploy') {
             steps {
                 echo '---Deploy---'
-                sh "ssh -i jenkins ${DCKER_WORKER} docker stop ${CONTAINER_NAME} || sleep 2"
-                sh "ssh -i jenkins ${DCKER_WORKER} docker run -d --rm --name ${CONTAINER_NAME} -p $HOST_PORT:5000 ${IMAGE_NAME}"
+                sh "DOCKER_HOST=${DOCKER_HOST} docker stop ${CONTAINER_NAME} || sleep 2"
+                sh "DOCKER_HOST=${DOCKER_HOST} docker run -d --rm --name ${CONTAINER_NAME} -p $HOST_PORT:5000 ${IMAGE_NAME}"
             }
         }
     }
