@@ -1,27 +1,32 @@
 pipeline {
     agent any
-
+    environment {
+        DOCKER_HOST="unix://\$(pwd)/docker.sock"
+        STAGE_INSTANCE="root@35.180.21.14"
+    }
     stages {
-        stage('1-Build') {
+        stage('Setup SSH tunnel') {
             steps {
-                echo '---Build start---'
-                sh 'echo "Build by Jenkins Build number: ${BUILD_ID}" >> index.html'
-                sh 'echo "Host_port: ${HOST_PORT}" >> index.html'
-                sh "docker build -t ${IMAGE_NAME} ."   
+                script {
+                    sh "ssh -nNT -L \$(pwd)/docker.sock:/var/run/docker.sock ${STAGE_INSTANCE} & echo \$! > /tmp/tunnel.pid"
+// sometimes it's not enough time to make a tunnel, add sleep
+                    sleep 5
+                }
             }
         }
-        stage('2-Test') {
+        stage('Deploy') {
             steps {
-                echo '---TEST---'
-                sh "docker images | grep ${IMAGE_NAME}"
+                script {
+                    sh "DOCKER_HOST=${DOCKER_HOST} docker ps -a"
+                }
             }
         }
-        stage('3-Deploy') {
-            steps {
-                echo '---Deploy---'
-                sh "docker stop ${CONTAINER_NAME} || sleep 2"
-                sh "docker run -d --rm --name ${CONTAINER_NAME} -p $HOST_PORT:5000 ${IMAGE_NAME}"
-            }
-        }
+    }
+    post {
+        always {
+            script {
+                sh "pkill -F /tmp/tunnel.pid"
+           }
+       }
     }
 }
