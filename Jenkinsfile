@@ -16,8 +16,8 @@ pipeline {
         stage('1-Build') {
             steps {
                 echo '---Build start---'
-                sh "echo "Build by Jenkins Build number: ${BUILD_ID}" >> index.html"
-                sh "echo "Host_port: ${HOST_PORT}" >> index.html"
+                sh 'echo "Build by Jenkins Build number: ${BUILD_ID}" >> index.html'
+                sh 'echo "Host_port: ${HOST_PORT}" >> index.html'
                 sh "DOCKER_HOST=${DOCKER_HOST} docker ps -a"
                 sh "DOCKER_HOST=${DOCKER_HOST} docker build -t ${IMAGE_NAME} ."   
             }
