@@ -8,7 +8,7 @@ pipeline {
         stage('Setup SSH tunnel') {
             steps {
                 script {
-                    sh "ssh -i /root/.ssh/jenkins -nNT -L \$(pwd)/docker.sock:/var/run/docker.sock ${STAGE_INSTANCE} & echo \$! > /tmp/tunnel.pid"
+                    sh "ssh -i /var/lib/jenkins/jenkins -nNT -L \$(pwd)/docker.sock:/var/run/docker.sock ${STAGE_INSTANCE} & echo \$! > /tmp/tunnel.pid"
 // sometimes it's not enough time to make a tunnel, add sleep
                     sleep 5
                 }
