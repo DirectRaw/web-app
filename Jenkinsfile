@@ -33,6 +33,7 @@ pipeline {
                 echo '---Deploy---'
                 sh "DOCKER_HOST=${DOCKER_HOST} docker stop ${CONTAINER_NAME} || sleep 2"
                 sh "DOCKER_HOST=${DOCKER_HOST} docker run -d --rm --name ${CONTAINER_NAME} -p $HOST_PORT:5000 ${IMAGE_NAME}"
+                sh "rm \$(pwd)/docker.sock"
             }
         }
     }
@@ -40,6 +41,7 @@ pipeline {
         always {
             script {
                 sh "pkill -F /tmp/tunnel.pid"
+                sh "rm /tmp/tunnel.pid"
            }
        }
     }
