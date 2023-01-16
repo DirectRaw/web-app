@@ -3,7 +3,7 @@ pipeline {
     environment {
         DOCKER_HOST="unix://\$(pwd)/docker.sock"
         STAGE_INSTANCE="root@35.180.21.14"
-
+    }
     stages {
         stage('Setup SSH tunnel') {
             steps {
@@ -43,4 +43,4 @@ pipeline {
        }
     }
 }
-}
+
